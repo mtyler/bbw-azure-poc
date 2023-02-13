@@ -122,6 +122,12 @@ async function shop(req, res) {
  * Example get method *
  **********************/
 
+app.get('/', function(req, res) {
+    // JF: 20230210 - trying to return a 200 for AKS probe health checks
+  res.json({success: 'gett call succeed!', url: req.url, body: req.body})
+});
+
+
 app.get('/sfdemo', function(req, res) {
   let data = shop(req, res)
   res.json(data)
@@ -175,8 +181,8 @@ app.delete('/item/*', function(req, res) {
   res.json({success: 'delete call succeed!', url: req.url});
 });
 
-app.listen(3000, function() {
-    console.log("App started")
+app.listen(8080, function() {
+    console.log("App started!")
 });
 
 // Export the app object. When executing the application local this does nothing.
