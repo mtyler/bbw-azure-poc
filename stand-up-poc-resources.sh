@@ -8,12 +8,23 @@
 #
 # This script assumes the existence of an Azure tenant (billing account)
 # with a subscription containing a resource group, and a user account that
-# has the Owner role in the subscription.  The script uses these extant
-# resources to provision additional resources including an Azure Container
-# Registry and an AKS cluster and then builds and deploys this project's
-# artifact into the AKS cluster as a kubernetes service. 
-
-echo Hello!
+# has the Owner role in the subscription.  (It could just as easily create
+# those resources as well if desired, but that's a matter of working out
+# security policies beyond the concerns of this proof of concept.  For that
+# matter, it could also clone the GitHub project cited below.)
+#
+# The script uses these extant resources to provision additional resources
+# including an Azure Container Registry and an Azure Kubernetes Service (AKS)
+# cluster and then builds and deploys this project's application artifact into
+# the AKS cluster as a kubernetes service.
+#
+# Next, it creates an Azure API Management (APIM) Service instance, creates
+# an APIM API that invokes the AKS service, defines an APIM product, and
+# publishes the API by adding it to the APIM product.
+#
+# That's a lot for one script.  In a real world (production) scenario, we could
+# modularize (and parameterize) these steps and wrap them in some orchestration
+# that can make outcome-based decisions and be paused/resumed at various steps.
 
 read -rep $'Before running this script, please make sure that you have run
 git clone https://github.com/jfausey/azure-bbw-poc-static-web-app.git
@@ -37,6 +48,16 @@ ContainerRegistry=bbwcr
 AKSCluster=BBW-AKS-1
 ImageName=k8s-poc-sfdemo
 HelmChart=sfdemo
+APIM=bbwapimpoc
+PublisherName=BBW
+PublisherEmail=jfausey@contractor.bbw.com
+ApiId=apparel
+ApiPath='/apparel'
+ApiDisplayName='Apparel Demo'
+ApiDescription='Access the Salesforce Apparel demo API'
+ApiOperation=search
+ApiProductName='BBW POC'
+ApiProductId=bbw-poc
 
 # Create an Azure Container Registry
 az acr create -g $ResourceGroup -n $ContainerRegistry --sku Basic
@@ -62,7 +83,8 @@ else
 fi
 
 # Install kubectl locally using the az aks install-cli command:
-# This step is not required in the Azure Cloud Shell.
+# This step is not required if this script is run in the Azure Cloud Shell
+# or any shell on a system with the aks CLI already installed.
 #az aks install-cli
 
 # Configure kubectl to connect to your Kubernetes cluster using the following command example to gets credentials for the AKS cluster:
@@ -98,7 +120,7 @@ else
     exit 6
 fi
 
-echo 'To test the service, run:
+echo 'To test the AKS service, run:
   export SERVICE_IP=$(kubectl get svc --namespace default sfdemo-chart --template "{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}")
 Then run:
   echo http://$SERVICE_IP:8080
@@ -108,5 +130,75 @@ You can also verify the service by running:
 and then running:
   kubectl get services
 and scanning the output for a service named sfdemo-chart.'
+
+ServiceIP=$(kubectl get svc --namespace default sfdemo-chart --template "{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}")
+ApiServiceUrl=http://$ServiceIp:8080
+
+# Create an Azure API Management Service (APIM) instance
+az apim create -g $ResourceGroup -n $APIM --publisher-name $PublisherName --publisher-email $PublisherEmail
+
+if [ $? -eq 0 ]
+then
+    echo "Successfully created an APIM instance."
+else
+    echo "Could not create an APIM instance." >&2
+    exit 7
+fi
+
+# Create an APIM API
+# See https://learn.microsoft.com/en-us/cli/azure/apim/api?view=azure-cli-latest#az-apim-api-create
+# TODO: Single-quote the args below?
+az apim api create -n $APIM -g $ResourceGroup --api-id $ApiId --path $ApiPath --display-name $ApiDisplayName --description $ApiDescription --service-url $ApiServiceUrl
+
+if [ $? -eq 0 ]
+then
+    echo "Successfully created an APIM API."
+else
+    echo "Could not create an APIM API." >&2
+    exit 8
+fi
+
+# Create the API's search operation
+az apim api operation create -g $ResourceGroup -n $APIM --api-id $ApiId --url-template '/{param1}' --method 'GET' --display-name 'Apparel Search' --description 'Search the Salesforce Apparel demo API' --template-parameters name=param1 description='search term' type=string required='true'
+
+if [ $? -eq 0 ]
+then
+    echo "Successfully created an APIM API operation."
+else
+    echo "Could not create an APIM API operation." >&2
+    exit 9
+fi
+
+echo "To test the API's search operation, GET https://$APIM.azure-api.net/apparel/search/dress"
+
+# Create an APIM product
+az apim product create -g $ResourceGroup -n $APIM --product-name $ApiProductName --product-id $ApiProductId --subscription-required false --state published --description 'Managed API POC for BBW'
+
+if [ $? -eq 0 ]
+then
+    echo "Successfully created an APIM product."
+else
+    echo "Could not create an APIM product." >&2
+    exit 10
+fi
+
+# Add the API to the APIM product (publish it):
+az apim product api add -g $ResourceGroup -n $APIM --api-id $ApiId --product-id $ApiProductId
+
+if [ $? -eq 0 ]
+then
+    echo "Successfully added an APIM API to an APIM product."
+else
+    echo "Could not add an APIM API to an APIM product." >&2
+    exit 11
+fi
+
+echo "To list the APIM products to verify the new one was added, run:
+az apim product api list -g $ResourceGroup -n $APIM --product-id $ApiProductId --output table"
+
+echo "To demonstrate the API, GET https://$APIM.azure-api.net/apparel/search/dress
+to invoke the search operation of API to query the Salesforce Apparel demo API
+for dress and you should get a JSON response containing the search results.
+Change "dress" to "shirt" or "pants" to see different results."
 
 exit 0

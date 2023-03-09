@@ -17,4 +17,5 @@ Regarding AKS set-up and deployment, see [Quickstart: Develop on Azure Kubernete
 
 See also [Use Azure API Management with microservices deployed in Azure Kubernetes Service](https://learn.microsoft.com/en-us/azure/api-management/api-management-kubernetes)
 
-The bulk of the Azure resource allocation is automated by the stand-up-poc-resources.sh script, which requires the Azure CLI to be installed and has a step (to create an AKS cluster) that requires Owner role in the target Azure subscription.
+The bulk of the Azure resource allocation is automated by the stand-up-poc-resources.sh script, which requires the Azure CLI to be installed and has a step (to create an AKS cluster) that requires Owner role in the target Azure subscription. Comments in the script provide more insights.  Remember, this
+project is a proof of concept from which to learn.  It is not production-worthy as-is.
