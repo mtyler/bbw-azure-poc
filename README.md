@@ -19,3 +19,5 @@ See also [Use Azure API Management with microservices deployed in Azure Kubernet
 
 The bulk of the Azure resource allocation is automated by the stand-up-poc-resources.sh script, which requires the Azure CLI to be installed and has a step (to create an AKS cluster) that requires Owner role in the target Azure subscription. Comments in the script provide more insights.  Remember, this
 project is a proof of concept from which to learn.  It is not production-worthy as-is.
+
+When you're ready, try running (bash example) `./stand-up-poc-resources.sh 2>&1 | tee logfile` so that you can capture all output and errors to logfile but still see and respond to the script's prompts for input.
