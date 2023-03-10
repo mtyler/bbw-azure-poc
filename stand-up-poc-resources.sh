@@ -55,7 +55,7 @@ read -rep $'Before running this script:
        git clone https://github.com/jfausey/azure-bbw-poc-static-web-app.git
   3) Make sure that the current working directory is the root directory of
      the cloned project.
-  4) Make sure that it is runing on a system that has the Azure CLI installed.
+  4) Make sure that it is running on a system that has the Azure CLI installed.
 Continue [y]?: ' ans
 ANSWER=${ans:-y}
 
