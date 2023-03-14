@@ -28,6 +28,10 @@
 # decisions for each step and can be paused/resumed at any step.
 
 # Define several variables whose values are parameters to Azure CLI commands.
+# The original values provided here were intended for the subscription named
+# "BBW Sandbox - Omni Channel", which is NOT the subscription that the
+# GitHub actions workflows and secrets in this project are for.
+# Customize these variables to align with your target Azure subscription.
 # TODO: Could make these command-line parameters to this script.
 ResourceGroup=bbw-sbxomni-apim-nonprod-eastus2-rg
 ContainerImage=k8s-poc-sfdemo
