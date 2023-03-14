@@ -32,7 +32,7 @@ jobs:
       run: npx playwright install --with-deps
     #- name: Build production build
     #  run: npm run build
-    #- name: Run your tests
+    - name: Run your tests
       run: npm run playwright_test
     - name: Get current date
       id: date
