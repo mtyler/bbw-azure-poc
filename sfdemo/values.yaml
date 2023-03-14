@@ -7,7 +7,7 @@ replicaCount: 1
 image:
   #repository: nginx
   #pullPolicy: Always
-  repository: bbwpoccr.azurecr.io/k8s-poc-sfdemo
+  repository: bbwcr.azurecr.io/k8s-poc-sfdemo
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
