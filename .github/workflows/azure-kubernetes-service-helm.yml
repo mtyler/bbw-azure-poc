@@ -64,7 +64,7 @@ jobs:
           #client-id: ${{ secrets.AZURE_CLIENT_ID }}
           #tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           #subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          credentials: ${{ secrets.AZURE_CREDENTIALS }}
 
       # Builds and pushes an image up to your Azure Container Registry
       - name: Build and push image to ACR
@@ -89,7 +89,7 @@ jobs:
           #client-id: ${{ secrets.AZURE_CLIENT_ID }}
           #tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           #subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          credentials: ${{ secrets.AZURE_CREDENTIALS }}
 
 
       # Use kubelogin to configure your kubeconfig for Azure auth
