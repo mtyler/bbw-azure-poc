@@ -41,6 +41,7 @@ securityContext: {}
 service:
   type: LoadBalancer
   port: 8080
+  loadBalancerIP: 20.185.8.32
   #type: ClusterIP
   #port: 80
 
