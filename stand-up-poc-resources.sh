@@ -37,6 +37,7 @@ ResourceGroup=bbw-sbxomni-apim-nonprod-eastus2-rg
 ContainerImage=k8s-poc-sfdemo
 ContainerRegistry=bbwpoccr
 AksCluster=BBW-AKS-1
+AksLocation=eastus2
 # Not used: AksClusterSubnet=bbw-sboxomni-nonprod-AKS-10.219.252.0_25
 HelmChart=sfdemo
 ApimInstance=bbwapimpoc
@@ -95,7 +96,7 @@ fi
 # Create an AKS cluster with access to the new container registry?
 # This step requires Owner role at the Azure subscription level.
 read -rep $"Create an AKS cluster as follows?
-  az aks create -g $ResourceGroup -n $AksCluster --location eastus
+  az aks create -g $ResourceGroup -n $AksCluster --location $AksLocation
     --attach-acr $ContainerRegistry --generate-ssh-keys
     --enable-addons http_application_routing
 NOTE: This step requires Owner role at the Azure subscription level.
@@ -110,7 +111,7 @@ then
     # (https://learn.microsoft.com/en-us/azure/aks/private-clusters#limitations)
     # whose workarounds are beyond the scope of the POC.
     echo "Creating an AKS cluster. Please be patient - this can take a while."
-    az aks create -g $ResourceGroup -n $AksCluster --location eastus --attach-acr $ContainerRegistry --generate-ssh-keys --enable-addons http_application_routing
+    az aks create -g $ResourceGroup -n $AksCluster --location $AksLocation --attach-acr $ContainerRegistry --generate-ssh-keys --enable-addons http_application_routing
     if [ $? -eq 0 ]
     then
         echo "Successfully created an AKS cluster."
@@ -171,23 +172,17 @@ else
     echo "Step skipped."
 fi
 
-# TODO: Automate the following variable substitution into $HelmChart/values.yaml
-# instead of making the user do it.
-read -rep $"Make sure that the image.repository value in $HelmChart/values.yaml
-is $ContainerRegistry.azurecr.io/$ContainerImage.
-Press enter to continue." foo
-
 # Deploy the container image from the Azure Container Registry to the AKS cluster?
 read -rep $"Deploy the container image from the Azure Container Registry to the
 AKS cluster as follows?
-  helm install $HelmChart $HelmChart/
+  helm install $HelmChart $HelmChart/ --set image.repository=$ContainerRegistry.azurecr.io/$ContainerImage
 Enter y (default) to continue. Enter anything else to skip this step: " ans
 ANSWER=${ans:-y}
 
 if [ $ANSWER == y ]
 then
     echo "Deploying the container image from the Azure Container Registry to the AKS cluster."
-    helm install $HelmChart $HelmChart/
+    helm install $HelmChart $HelmChart/ --set image.repository=$ContainerRegistry.azurecr.io/$ContainerImage
     if [ $? -eq 0 ]
     then
         echo "Successfully deployed the service to the AKS cluster."
