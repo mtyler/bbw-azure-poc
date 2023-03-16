@@ -195,7 +195,7 @@ else
 fi
 
 ServiceIP=$(kubectl get svc --namespace default sfdemo-chart --template "{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}")
-ApiServiceUrl=http://$ServiceIp:8080
+ApiServiceUrl=http://$ServiceIP:8080/sfdemo
 
 read -rep $"GET $ApiServiceUrl with a browser or a tool like curl or wget and
 see if you get a JSON payload in response.
@@ -243,7 +243,7 @@ ANSWER=${ans:-y}
 if [ $ANSWER == y ]
 then
     echo "Creating an APIM API."
-    az apim api create -n $ApimInstance -g $ResourceGroup --api-id $ApiId --path $ApiPath --display-name $ApiDisplayName --description $ApiDescription --service-url $ApiServiceUrl
+    az apim api create -n $ApimInstance -g $ResourceGroup --api-id $ApiId --path $ApiPath --display-name "$ApiDisplayName" --description "$ApiDescription" --service-url $ApiServiceUrl
     if [ $? -eq 0 ]
     then
         echo "Successfully created an APIM API."
@@ -294,7 +294,7 @@ ANSWER=${ans:-y}
 if [ $ANSWER == y ]
 then
     echo "Creating an APIM product."
-    az apim product create -g $ResourceGroup -n $ApimInstance --product-name $ApiProductName --product-id $ApiProductId --subscription-required false --state published --description 'Managed API POC for BBW'
+    az apim product create -g $ResourceGroup -n $ApimInstance --product-name "$ApiProductName" --product-id $ApiProductId --subscription-required false --state published --description 'Managed API POC for BBW'
     if [ $? -eq 0 ]
     then
         echo "Successfully created an APIM product."
