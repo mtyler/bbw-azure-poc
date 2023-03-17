@@ -31,14 +31,6 @@ pipeline {
           branch 'main'
       }    
       steps {
-        sh '''
-          echo "Build and Push"
-          docker build -t $ACR/$SERVICE:$TAG $WORKSPACE/.
-          docker login -u bbwcr -p $BBWCR_KEY $ACR
-          docker push $ACR/$SERVICE:$TAG
-        '''
-      }
-      steps {
          sh '''
             echo "Push"
             docker login -u bbwcr -p $BBWCR_KEY $ACR
