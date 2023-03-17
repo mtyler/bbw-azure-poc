@@ -8,10 +8,29 @@ pipeline {
       TAG="${JOB_BASE_NAME}-${BUILD_NUMBER}"
   }
   stages {
-    stage('Build and Push') {
+    stage('Build') {
+      steps {
+        sh '''
+            echo "Build"
+            docker build -t $ACR/$SERVICE:$TAG $WORKSPACE/.
+        '''    
+      }
+    }
+    stage('Test') {
+      steps {
+        sh '''
+            echo "Testing... Testing...  Testing...  Is this thing on?"
+        '''    
+      }
+    }
+    stage('Push') {
       options {
           azureKeyVault([[envVariable: 'BBWCR_KEY', name: 'bbwcr', secretType: 'Secret']])
       }
+<<<<<<< HEAD
+      when { 
+          branch 'main'
+=======
       steps {
         sh '''
           echo "Build and Push"
@@ -19,9 +38,20 @@ pipeline {
           docker login -u bbwcr -p $BBWCR_KEY $ACR
           docker push $ACR/$SERVICE:$TAG
         '''
+>>>>>>> main
       }
+      steps {
+         sh '''
+            echo "Push"
+            docker login -u bbwcr -p $BBWCR_KEY $ACR
+            docker push $ACR/$SERVICE:$TAG
+          '''
+        }
     }
-    stage('Deploy') {
+    stage('Deploy QA') {
+      when { 
+          branch 'main'
+      }
       steps {
         sh '''
           echo "Deploy"
