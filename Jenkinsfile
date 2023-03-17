@@ -5,6 +5,7 @@ pipeline {
       RGROUP='BBW-DEV'
       AKS='BBW-AKS-1'
       SERVICE='poc'
+      TAG="${JOB_BASE_NAME}-${BUILD_NUMBER}"
   }
   stages {
     stage('Build and Push') {
@@ -14,9 +15,9 @@ pipeline {
       steps {
         sh '''
           echo "Build and Push"
-          docker build -t $ACR/$SERVICE:$BUILD_NUMBER $WORKSPACE/.
+          docker build -t $ACR/$SERVICE:$TAG $WORKSPACE/.
           docker login -u bbwcr -p $BBWCR_KEY $ACR
-          docker push $ACR/$SERVICE:$BUILD_NUMBER
+          docker push $ACR/$SERVICE:$TAG
         '''
       }
     }
@@ -26,7 +27,7 @@ pipeline {
           echo "Deploy"
           az aks get-credentials -g $RGROUP -n $AKS 
           kubectl cluster-info
-          helm upgrade $SERVICE $SERVICE/ --install --create-namespace -n qa -f $WORKSPACE/sfdemo/values.yaml --set image.tag=$BUILD_NUMBER
+          helm upgrade $SERVICE $SERVICE/ --install --create-namespace -n qa -f $WORKSPACE/poc/values.yaml --set image.tag=$TAG --set image.pullPolicy=Always
         '''
       }
     }
