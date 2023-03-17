@@ -14,7 +14,7 @@ pipeline {
       steps {
         sh '''
           echo "Build and Push"
-          docker build -t $ACR/:$BUILD_NUMBER $WORKSPACE/.
+          docker build -t $ACR/$SERVICE:$BUILD_NUMBER $WORKSPACE/.
           docker login -u bbwcr -p $BBWCR_KEY $ACR
           docker push $ACR/$SERVICE:$BUILD_NUMBER
         '''
