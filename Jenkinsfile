@@ -27,10 +27,9 @@ pipeline {
       options {
           azureKeyVault([[envVariable: 'BBWCR_KEY', name: 'bbwcr', secretType: 'Secret']])
       }
-<<<<<<< HEAD
       when { 
           branch 'main'
-=======
+      }    
       steps {
         sh '''
           echo "Build and Push"
@@ -38,7 +37,6 @@ pipeline {
           docker login -u bbwcr -p $BBWCR_KEY $ACR
           docker push $ACR/$SERVICE:$TAG
         '''
->>>>>>> main
       }
       steps {
          sh '''
@@ -46,7 +44,7 @@ pipeline {
             docker login -u bbwcr -p $BBWCR_KEY $ACR
             docker push $ACR/$SERVICE:$TAG
           '''
-        }
+      }
     }
     stage('Deploy QA') {
       when { 
