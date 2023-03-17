@@ -35,7 +35,7 @@ pipeline {
         script {
           echo "Smoke Test"
           RESULT = sh (
-                script: 'curl http://$(kubectl get svc --namespace qa app --template "{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"):8080',
+                script: 'curl http://$(kubectl get svc --namespace qa $SERVICE --template "{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"):8080',
                 returnStdout: true
             ).trim()
           echo "test result: ${RESULT}"
