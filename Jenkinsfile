@@ -1,10 +1,10 @@
 pipeline {
   agent any
   environment {
-      ACR=bbwcr.azurecr.io
-      RGROUP=BBW-DEV
-      AKS=BBW-AKS-1
-      SERVICE=poc
+      ACR='bbwcr.azurecr.io'
+      RGROUP='BBW-DEV'
+      AKS='BBW-AKS-1'
+      SERVICE='poc'
   }
   stages {
     stage('Build and Push') {
