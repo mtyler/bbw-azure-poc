@@ -16,7 +16,7 @@ pipeline {
         '''    
       }
     }
-    stage('Test') {
+    stage('Feature Branch Testing') {
       steps {
         sh '''
             echo "Testing... Testing...  Testing...  Is this thing on?"
@@ -44,19 +44,50 @@ pipeline {
       }
       steps {
         sh '''
-          echo "Deploy"
+          echo "Deploy QA"
           az aks get-credentials -g $RGROUP -n $AKS 
           kubectl cluster-info
           helm upgrade $SERVICE $SERVICE/ --install --create-namespace -n qa -f $WORKSPACE/poc/values.yaml --set image.tag=$TAG --set image.pullPolicy=Always
         '''
       }
     }
-    stage('Smoke Test') {
+    stage('Smoke Test QA') {
+      when { 
+          branch 'main'
+      }
       steps {
         script {
-          echo "Smoke Test"
+          echo "Smoke Test QA"
           RESULT = sh (
                 script: 'curl http://$(kubectl get svc --namespace qa $SERVICE --template "{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"):8080',
+                returnStdout: true
+            ).trim()
+          echo "test result: ${RESULT}"
+        }
+      }
+    }
+    stage('Deploy Prod') {
+      when { 
+          branch 'main'
+      }
+      steps {
+        sh '''
+          echo "Deploy Prod"
+          az aks get-credentials -g $RGROUP -n $AKS 
+          kubectl cluster-info
+          helm upgrade $SERVICE $SERVICE/ --install --create-namespace -n prod -f $WORKSPACE/poc/values.yaml --set image.tag=$TAG --set image.pullPolicy=Always
+        '''
+      }
+    }
+    stage('Smoke Test Prod') {
+      when { 
+          branch 'main'
+      }
+      steps {
+        script {
+          echo "Smoke Test Prod"
+          RESULT = sh (
+                script: 'curl http://$(kubectl get svc --namespace prod $SERVICE --template "{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"):8080',
                 returnStdout: true
             ).trim()
           echo "test result: ${RESULT}"
