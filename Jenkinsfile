@@ -52,7 +52,7 @@ pipeline {
           echo "Deploy Development"
           az aks get-credentials -g $RGROUP -n $AKS 
           kubectl cluster-info
-          helm upgrade $SERVICE $SERVICE/ --install --create-namespace -n dev -f $WORKSPACE/poc/values.yaml --set image.tag=$TAG --set image.pullPolicy=Always
+          helm upgrade $SERVICE $SERVICE/ --install --reuse-values --create-namespace -n dev -f $WORKSPACE/poc/values.yaml --set image.tag=$TAG --set image.pullPolicy=Always
         '''
       }
     }
@@ -77,7 +77,7 @@ pipeline {
           echo "Deploy QA"
           az aks get-credentials -g $RGROUP -n $AKS 
           kubectl cluster-info
-          helm upgrade $SERVICE $SERVICE/ --install --create-namespace -n qa -f $WORKSPACE/poc/values.yaml --set image.tag=$TAG --set image.pullPolicy=Always
+          helm upgrade $SERVICE $SERVICE/ --install --reuse-values --create-namespace -n qa -f $WORKSPACE/poc/values.yaml --set image.tag=$TAG --set image.pullPolicy=Always
         '''
       }
     }
@@ -105,7 +105,7 @@ pipeline {
           echo "Deploy Prod"
           az aks get-credentials -g $RGROUP -n $AKS 
           kubectl cluster-info
-          helm upgrade $SERVICE $SERVICE/ --install --create-namespace -n prod -f $WORKSPACE/poc/values-prod.yaml --set image.tag=$TAG --set image.pullPolicy=Always
+          helm upgrade $SERVICE $SERVICE/ --install --reuse-values --create-namespace -n prod -f $WORKSPACE/poc/values.yaml --set image.tag=$TAG --set image.pullPolicy=Always
         '''
       }
     }
