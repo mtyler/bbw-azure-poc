@@ -8,18 +8,28 @@ pipeline {
       TAG="${JOB_BASE_NAME}-${BUILD_NUMBER}"
   }
   stages {
-    stage('Build') {
+    stage('Feature Branch Validation') {
       steps {
         sh '''
-            echo "Build"
-            docker build -t $ACR/$SERVICE:$TAG $WORKSPACE/.
+            echo "Cleanup..."
+            rm -rf ./node_modules
+            rm -f junit.xml eslint.xml package-lock.json
+            echo "Setup..."
+            npm install
+            ## uncomment to include static code analysis
+            ## echo "Running Lint..."
+            ## npx eslint -c .eslintrc.yml -f checkstyle app.js > eslint.xml
+            echo "Running Tests..."
+            npm run test-ci
         '''    
+      junit 'junit.xml'
       }
     }
-    stage('Feature Branch Testing') {
+    stage('Docker Build') {
       steps {
         sh '''
-            echo "Testing... Testing...  Testing...  Is this thing on?"
+            echo "Docker Build"
+            docker build --progress=plain --no-cache -t $ACR/$SERVICE:$TAG $WORKSPACE/.
         '''    
       }
     }
