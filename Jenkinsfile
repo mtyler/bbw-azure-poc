@@ -8,7 +8,7 @@ pipeline {
       TAG="${JOB_BASE_NAME}-${BUILD_NUMBER}"
   }
   stages {
-    stage('Feature Branch Validation') {
+    stage('Branch Validation: Build & Unit Test') {
       steps {
         sh '''
             echo "Cleanup..."
@@ -25,21 +25,19 @@ pipeline {
       junit 'junit.xml'
       }
     }
-    stage('Docker Build') {
+    stage('Branch Validation: Docker Build') {
       steps {
         sh '''
             echo "Docker Build"
-            docker build --progress=plain --no-cache -t $ACR/$SERVICE:$TAG $WORKSPACE/.
+            docker build --progress=plain --no-cache -t $ACR/$SERVICE:$TAG $WORKSPACE/. --build-arg BUILD=$TAG
         '''    
+      junit 'junit.xml'
       }
     }
-    stage('Push') {
+    stage('Branch Validation: Push') {
       options {
           azureKeyVault([[envVariable: 'BBWCR_KEY', name: 'bbwcr', secretType: 'Secret']])
       }
-      when { 
-          branch 'main'
-      }    
       steps {
          sh '''
             echo "Push"
@@ -48,7 +46,29 @@ pipeline {
           '''
       }
     }
-    stage('Deploy QA') {
+    stage('Branch Validation: Deploy Development') {
+      steps {
+        sh '''
+          echo "Deploy Development"
+          az aks get-credentials -g $RGROUP -n $AKS 
+          kubectl cluster-info
+          helm upgrade $SERVICE $SERVICE/ --install --create-namespace -n dev -f $WORKSPACE/poc/values.yaml --set image.tag=$TAG --set image.pullPolicy=Always
+        '''
+      }
+    }
+    stage('Branch Validation: Smoke Test Development') {
+      steps {
+        script {
+          echo "Smoke Test Development"
+          RESULT = sh (
+                script: 'curl http://$(kubectl get svc --namespace dev $SERVICE --template "{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"):8080',
+                returnStdout: true
+            ).trim()
+          echo "test result: ${RESULT}"
+        }
+      }
+    }
+    stage('Trunk Validation: Deploy QA') {
       when { 
           branch 'main'
       }
@@ -61,7 +81,7 @@ pipeline {
         '''
       }
     }
-    stage('Smoke Test QA') {
+    stage('Trunk Validation: Smoke Test QA') {
       when { 
           branch 'main'
       }
@@ -76,7 +96,7 @@ pipeline {
         }
       }
     }
-    stage('Deploy Prod') {
+    stage('Trunk Validation: Deploy Prod') {
       when { 
           branch 'main'
       }
@@ -85,11 +105,11 @@ pipeline {
           echo "Deploy Prod"
           az aks get-credentials -g $RGROUP -n $AKS 
           kubectl cluster-info
-          helm upgrade $SERVICE $SERVICE/ --install --create-namespace -n prod -f $WORKSPACE/poc/values.yaml --set image.tag=$TAG --set image.pullPolicy=Always
+          helm upgrade $SERVICE $SERVICE/ --install --create-namespace -n prod -f $WORKSPACE/poc/values-prod.yaml --set image.tag=$TAG --set image.pullPolicy=Always
         '''
       }
     }
-    stage('Smoke Test Prod') {
+    stage('Trunk Validation: Smoke Test Prod') {
       when { 
           branch 'main'
       }

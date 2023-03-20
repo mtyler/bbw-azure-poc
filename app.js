@@ -2,7 +2,7 @@
   Jon Fausey
   20230130
 */
-
+require('dotenv').config();
 const express = require('express')
 const bodyParser = require('body-parser')
 
@@ -124,7 +124,8 @@ async function shop(req, res) {
 
 app.get('/', function(req, res) {
     // JF: 20230210 - trying to return a 200 for AKS probe health checks
-  res.json({success: 'gett call succeed!', url: req.url, body: req.body})
+  const build = process.env.BUILD 
+  res.json({success: `success! build: ${build}`, url: req.url, body: req.body})
 });
 
 

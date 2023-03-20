@@ -1,13 +1,16 @@
+ARG BUILD=local
 # ---- > Build
-FROM node:latest AS build
+FROM node:14.21-bullseye AS build
 WORKDIR /usr/src/app
 COPY package*.json /usr/src/app/
 COPY app.js /usr/src/app
 COPY ./src/ /usr/src/app
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 
 # ---- > Package
-FROM node:18.0-bullseye-slim
+FROM node:14.21-bullseye-slim
+ARG BUILD
+ENV BUILD=$BUILD
 ENV NODE_ENV production
 USER node 
 WORKDIR /usr/src/app

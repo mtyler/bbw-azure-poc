@@ -1,5 +1,6 @@
 package-lock.json
 junit.xml
+.DS_Store
 
 # Logs
 logs

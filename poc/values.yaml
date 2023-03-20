@@ -6,13 +6,13 @@ replicaCount: 1
 
 image:
   repository: bbwcr.azurecr.io/poc
-  pullPolicy: IfNotPresent
+  # pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  # tag: ""
 
 imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
+nameOverride: "poc"
+fullnameOverride: "poc"
 
 serviceAccount:
   # Specifies whether a service account should be created
