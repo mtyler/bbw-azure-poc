@@ -116,6 +116,22 @@ async function shop(req, res) {
   return searchResults
 }
 
+//BBW items price
+const products = [
+  { name: 'Candle', price: 12.99 },
+  { name: 'Soap', price: 5.99 },
+  { name: 'Lotion', price: 8.99 },
+];
+
+function shop(productName) {
+  const product = products.find(p => p.name === productName);
+  if (!product) {
+    console.log(`Sorry, we do not carry ${productName}.`);
+    return;
+  }
+  console.log(`The ${product.name} is in stock and costs $${product.price}.`);
+}
+
 
 /**********************
  * Example get method *
