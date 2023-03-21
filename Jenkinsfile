@@ -46,27 +46,32 @@ pipeline {
           '''
       }
     }
-    stage('Branch Validation: Deploy Development') {
+    stage('Branch Validation: Deploy') {
       steps {
         sh '''
-          echo "Deploy Development"
+          echo "Deploy Branch"
+          JOB_LOWER=$(echo $JOB_BASE_NAME | tr '[:upper:]' '[:lower:]')
           az aks get-credentials -g $RGROUP -n $AKS 
-          kubectl cluster-info
-          helm upgrade $SERVICE $SERVICE/ --install --reuse-values --create-namespace -n dev -f $WORKSPACE/poc/values.yaml --set image.tag=$TAG --set image.pullPolicy=Always
+          helm upgrade $SERVICE $SERVICE/ --install --reuse-values --create-namespace -n $JOB_LOWER -f $WORKSPACE/poc/values.yaml --set image.tag=$TAG --set image.pullPolicy=Always
+          kubectl rollout status deployment poc -n $JOB_LOWER --timeout 90s
         '''
       }
     }
-    stage('Branch Validation: Smoke Test Development') {
+    stage('Branch Validation: Smoke Test') {
       steps {
-        script {
-          echo "Smoke Test Development"
-          RESULT = sh (
-                script: 'curl http://$(kubectl get svc --namespace dev $SERVICE --template "{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"):8080',
-                returnStdout: true
-            ).trim()
-          echo "test result: ${RESULT}"
+          script {
+            echo "Smoke Test Branch"
+            RESULT = sh (
+                  script: '''
+                  echo "give $SERVICE time to get ingress"
+                  sleep 25
+                  JOB_LOWER=$(echo $JOB_BASE_NAME | tr '[:upper:]' '[:lower:]')
+                  curl http://$(kubectl get svc --namespace $JOB_LOWER $SERVICE --template "{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"):8080''',
+                  returnStdout: true
+              ).trim()
+            echo "test result: ${RESULT}"
+          }
         }
-      }
     }
     stage('Trunk Validation: Deploy QA') {
       when { 
