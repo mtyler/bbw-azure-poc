@@ -13,15 +13,19 @@
   "main": "app.js",
   "license": "Apache-2.0",
   "scripts": {
-    "start": "export BUILD=local && node app.js",
+    "clean": "rm -rf node_modules && rm -f package-lock.json",
+    "start": "node server.js",
     "test": "jest",
-    "test-ci": "jest --ci --reporters=default --reporters=jest-junit"
+    "test-unit": "jest -- poc-unit.test.js",
+    "test-integration": "jest poc-integration.test.js",
+    "test-ci": "jest poc-integration.test.js --ci --reporters=default --reporters=jest-junit"
   },
   "dependencies": {
     "body-parser": "^1.17.1",
     "commerce-sdk": "^2.10.0",
-    "express": "^4.15.2",
-    "nanoid": "^3.3.4"
+    "express": "^4.18.2",
+    "nanoid": "^3.3.4",
+    "nodemon": "^2.0.21"
   },
   "devDependencies": {
     "eslint": "^8.36.0",
@@ -29,8 +33,10 @@
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-n": "^15.6.1",
     "eslint-plugin-promise": "^6.1.1",
+    "http": "0.0.1-security",
     "jest": "^29.5.0",
     "jest-junit": "^15.0.0",
-    "supertest": "^6.3.3"
+    "supertest": "^6.3.3",
+    "xml-js": "^1.6.11"
   }
 }

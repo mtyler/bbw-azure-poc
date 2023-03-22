@@ -4,7 +4,7 @@ FROM node:14.21-bullseye AS build
 WORKDIR /usr/src/app
 COPY package*.json /usr/src/app/
 COPY app.js /usr/src/app
-COPY ./src/ /usr/src/app
+COPY server.js /usr/src/app
 RUN npm ci --omit=dev
 
 # ---- > Package
@@ -16,4 +16,5 @@ USER node
 WORKDIR /usr/src/app
 COPY --chown=node:node --from=build /usr/src/app/node_modules /usr/src/app/node_modules
 COPY --chown=node:node app.js /usr/src/app
-CMD [ "node", "app.js" ]
+COPY --chown=node:node server.js /usr/src/app
+CMD [ "node", "server.js" ]

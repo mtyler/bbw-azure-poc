@@ -6,6 +6,9 @@ require('dotenv').config();
 const express = require('express')
 const bodyParser = require('body-parser')
 
+
+const createServer = require("./server") // new
+
 // declare a new express app
 const app = express()
 app.use(bodyParser.json())
@@ -125,7 +128,7 @@ async function shop(req, res) {
 app.get('/', function(req, res) {
     // JF: 20230210 - trying to return a 200 for AKS probe health checks
   const build = process.env.BUILD 
-  res.json({success: `success! build: ${build}`, url: req.url, body: req.body})
+  res.json({success: 'get call succeed!', url: req.url, body: req.body})
 });
 
 
@@ -143,6 +146,16 @@ app.get('/sfdemo/*', async function(req, res) {
 /****************************
 * Example post method *
 ****************************/
+// const fs = require('fs');
+// const path = require('path');
+// // const convert = require('xml-js');
+
+// const xmlFile = fs.readFileSync(path.resolve(__dirname, './__mockData__/radial-tax-response-mock.xml'), 'utf8');
+
+// app.post('/', function(req, res) {
+//   // Add your code here
+//   res.json({success: 'post call succeed!', url: req.url, body: xmlFile})
+// });
 
 app.post('/item', function(req, res) {
   // Add your code here
@@ -174,7 +187,7 @@ app.put('/item/*', function(req, res) {
 
 app.delete('/item', function(req, res) {
   // Add your code here
-  res.json({success: 'delete call succeed!', url: req.url});
+  res.json({success: 'delete call succeed!', url: req.url, body: req.body})
 });
 
 app.delete('/item/*', function(req, res) {
@@ -182,10 +195,9 @@ app.delete('/item/*', function(req, res) {
   res.json({success: 'delete call succeed!', url: req.url});
 });
 
-app.listen(8080, function() {
-    console.log("App started!")
-});
+// process.on('SIGTERM', () => {
+//   server.close(() => {
+//   })
+// })
 
-// Export the app object. When executing the application local this does nothing.
-// Necessary?
 module.exports = app

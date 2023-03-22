@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <TaxDutyQuoteResponse xmlns="http://api.gsicommerce.com/schema/checkout/1.0">
+        <Shipping>
+            <ShipGroups>
+                <ShipGroup id="shipgroup_Economy_Ground">
+                    <DestinationTarget ref="dest_Economy_Ground"/>
+                    <Items>
+                        <OrderItem lineNumber="1">
+                            <ItemId type="VPN">020519316</ItemId>
+                            <ItemDesc>Kitchen Lemon Gentle</ItemDesc>
+                            <HTSCode/>
+                            <Quantity>1</Quantity>
+                            <Pricing>
+                                <Merchandise>
+                                    <Amount>7.5</Amount>
+                                    <TaxData>
+                                        <TaxClass>76800</TaxClass>
+                                        <Taxes>
+                                            <Tax taxType="SALES" taxability="TAXABLE">
+                                                <Situs>ADMINISTRATIVE_ORIGIN</Situs>
+                                                <Jurisdiction jurisdictionLevel="STATE" jurisdictionId="28101">OHIO</Jurisdiction>
+                                                <Imposition impositionType="General Sales and Use Tax">Sales and Use Tax</Imposition>
+                                                <EffectiveRate>0.0575</EffectiveRate>
+                                                <TaxableAmount>7.5</TaxableAmount>
+                                                <CalculatedTax>0.43</CalculatedTax>
+                                            </Tax>
+                                            <Tax taxType="SALES" taxability="TAXABLE">
+                                                <Situs>ADMINISTRATIVE_ORIGIN</Situs>
+                                                <Jurisdiction jurisdictionLevel="COUNTY" jurisdictionId="28565">FRANKLIN</Jurisdiction>
+                                                <Imposition impositionType="General Sales and Use Tax">Local Sales and Use Tax</Imposition>
+                                                <EffectiveRate>0.0125</EffectiveRate>
+                                                <TaxableAmount>7.5</TaxableAmount>
+                                                <CalculatedTax>0.09</CalculatedTax>
+                                            </Tax>
+                                            <Tax taxType="SALES" taxability="TAXABLE">
+                                                <Situs>ADMINISTRATIVE_ORIGIN</Situs>
+                                                <Jurisdiction jurisdictionLevel="DISTRICT" jurisdictionId="78115">CENTRAL OHIO TRANSIT AUTHORITY</Jurisdiction>
+                                                <Imposition impositionType="General Sales and Use Tax">Local Sales and Use Tax</Imposition>
+                                                <EffectiveRate>0.005</EffectiveRate>
+                                                <TaxableAmount>7.5</TaxableAmount>
+                                                <CalculatedTax>0.04</CalculatedTax>
+                                            </Tax>
+                                        </Taxes>
+                                    </TaxData>
+                                    <UnitPrice>7.5</UnitPrice>
+                                </Merchandise>
+                                <Shipping>
+                                    <Amount>9.99</Amount>
+                                    <TaxData>
+                                        <TaxClass>91000</TaxClass>
+                                        <Taxes>
+                                            <Tax taxType="SALES" taxability="TAXABLE">
+                                                <Situs>ADMINISTRATIVE_ORIGIN</Situs>
+                                                <Jurisdiction jurisdictionLevel="STATE" jurisdictionId="28101">OHIO</Jurisdiction>
+                                                <Imposition impositionType="General Sales and Use Tax">Sales and Use Tax</Imposition>
+                                                <EffectiveRate>0.0575</EffectiveRate>
+                                                <TaxableAmount>9.99</TaxableAmount>
+                                                <CalculatedTax>0.57</CalculatedTax>
+                                            </Tax>
+                                            <Tax taxType="SALES" taxability="TAXABLE">
+                                                <Situs>ADMINISTRATIVE_ORIGIN</Situs>
+                                                <Jurisdiction jurisdictionLevel="COUNTY" jurisdictionId="28565">FRANKLIN</Jurisdiction>
+                                                <Imposition impositionType="General Sales and Use Tax">Local Sales and Use Tax</Imposition>
+                                                <EffectiveRate>0.0125</EffectiveRate>
+                                                <TaxableAmount>9.99</TaxableAmount>
+                                                <CalculatedTax>0.13</CalculatedTax>
+                                            </Tax>
+                                            <Tax taxType="SALES" taxability="TAXABLE">
+                                                <Situs>ADMINISTRATIVE_ORIGIN</Situs>
+                                                <Jurisdiction jurisdictionLevel="DISTRICT" jurisdictionId="78115">CENTRAL OHIO TRANSIT AUTHORITY</Jurisdiction>
+                                                <Imposition impositionType="General Sales and Use Tax">Local Sales and Use Tax</Imposition>
+                                                <EffectiveRate>0.005</EffectiveRate>
+                                                <TaxableAmount>9.99</TaxableAmount>
+                                                <CalculatedTax>0.05</CalculatedTax>
+                                            </Tax>
+                                        </Taxes>
+                                    </TaxData>
+                                </Shipping>
+                            </Pricing>
+                        </OrderItem>
+                    </Items>
+                </ShipGroup>
+            </ShipGroups>
+            <Destinations>
+                <MailingAddress id="dest_Economy_Ground">
+                    <PersonName>
+                        <LastName>djfkjfk</LastName>
+                        <FirstName>joshd</FirstName>
+                    </PersonName>
+                    <Address>
+                        <Line1>123 w main st</Line1>
+                        <City>Columbus</City>
+                        <MainDivision>OH</MainDivision>
+                        <CountryCode>US</CountryCode>
+                        <PostalCode>43220</PostalCode>
+                    </Address>
+                </MailingAddress>
+            </Destinations>
+        </Shipping>
+        <TaxTransactionId>3964174</TaxTransactionId>
+    </TaxDutyQuoteResponse>

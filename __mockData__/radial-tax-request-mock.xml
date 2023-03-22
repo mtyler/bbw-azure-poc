@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?><TaxDutyQuoteRequest xmlns="http://api.gsicommerce.com/schema/checkout/1.0">
+  <Currency>USD</Currency>
+  <VATInclusivePricing>false</VATInclusivePricing>
+  <BillingInformation ref="dest_Economy_Ground"/>
+  <Shipping>
+    <ShipGroups>
+      <ShipGroup id="shipgroup_Economy_Ground">
+        <DestinationTarget ref="dest_Economy_Ground"/>
+        <Items>
+          <OrderItem lineNumber="1">
+            <ItemId type="VPN">020519316</ItemId>
+            <ItemDesc>Kitchen Lemon Gentle</ItemDesc>
+            <HTSCode/>
+            <Origins>
+              <AdminOrigin>
+                <Line1>8655 East Broad St</Line1>
+                <City>Reynoldsburg</City>
+                <MainDivision>OH</MainDivision>
+                <CountryCode>US</CountryCode>
+                <PostalCode>43068</PostalCode>
+              </AdminOrigin>
+              <ShippingOrigin>
+                <Line1>6200 W. Van Buren St</Line1>
+                <City>Phoenix</City>
+                <MainDivision>AZ</MainDivision>
+                <CountryCode>US</CountryCode>
+                <PostalCode>85043</PostalCode>
+              </ShippingOrigin>
+              <ManufacturingCountryCode>US</ManufacturingCountryCode>
+            </Origins>
+            <Quantity>1</Quantity>
+            <Pricing>
+              <Merchandise>
+                <Amount>7.5</Amount>
+                <TaxClass>76800</TaxClass>
+                <UnitPrice>7.5</UnitPrice>
+              </Merchandise>
+              <Shipping>
+                <Amount>9.99</Amount>
+                <TaxClass>91000</TaxClass>
+              </Shipping>
+            </Pricing>
+          </OrderItem>
+        </Items>
+      </ShipGroup>
+    </ShipGroups>
+    <Destinations>
+      <MailingAddress id="dest_Economy_Ground">
+        <PersonName>
+          <LastName>djfkjfk</LastName>
+          <FirstName>joshd</FirstName>
+        </PersonName>
+        <Address>
+          <Line1>123 w main st</Line1>
+          <City>Columbus</City>
+          <MainDivision>OH</MainDivision>
+          <CountryCode>US</CountryCode>
+          <PostalCode>43220</PostalCode>
+        </Address>
+      </MailingAddress>
+    </Destinations>
+  </Shipping>
+</TaxDutyQuoteRequest>

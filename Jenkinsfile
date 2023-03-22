@@ -19,7 +19,9 @@ pipeline {
             ## uncomment to include static code analysis
             ## echo "Running Lint..."
             ## npx eslint -c .eslintrc.yml -f checkstyle app.js > eslint.xml
-            echo "Running Tests..."
+            echo "Running Unit Tests..."
+            npm run test-unit
+            echo "Running Integration Tests..."
             npm run test-ci
         '''    
       junit 'junit.xml'
