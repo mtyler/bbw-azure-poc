@@ -14,6 +14,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "clean": "rm -rf node_modules && rm -f package-lock.json",
+    "build": "npm run clean && npm install",
     "start": "node server.js",
     "test": "jest",
     "test-unit": "jest -- poc-unit.test.js",

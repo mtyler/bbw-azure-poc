@@ -195,6 +195,14 @@ app.delete('/item/*', function(req, res) {
   res.json({success: 'delete call succeed!', url: req.url});
 });
 
+/****************************
+* Healthcheck method *
+****************************/
+
+app.get('/healthz', (req, res) => {
+  res.status(200).send(process.env.BUILD);
+});
+
 // process.on('SIGTERM', () => {
 //   server.close(() => {
 //   })
