@@ -121,7 +121,7 @@ async function shop (req, res) {
 /********************************************************************
  * Query a Radial API that returns XML and parse he response to JSON.
  ********************************************************************/
-const https = require('https')
+const fetch = require('node-fetch')
 const xml2js = require('xml2js')
 
 async function getTaxes() {
