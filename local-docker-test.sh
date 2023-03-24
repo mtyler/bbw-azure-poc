@@ -2,6 +2,7 @@
       
 # This is a quick and dirty script to assist manually testing to ensure
 # that the docker image builds and runs locally
+npm run clean && npm install
 docker stop poc
 docker remove poc
 docker build --progress=plain --no-cache -t local/poc:100 . --build-arg BUILD='local-docker'

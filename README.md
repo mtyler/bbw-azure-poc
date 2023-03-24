@@ -21,6 +21,10 @@ ACR, AKS, Vault, VM, etc...
 - Development deployments run in a namespace = branch name
 - note: Branch builds fail the first time through. Currently, researching a robust way to wait for service availability
 
-## TODO
+## Demo Highlights
+
+[CICD Jenkins Declarative Pipeline](/Jenkinsfile)
+
+[Dual-stage Build Dockerfile](/Dockerfile)
 
 

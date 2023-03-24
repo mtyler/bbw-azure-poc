@@ -16,7 +16,7 @@
     "clean": "rm -rf node_modules && rm -f package-lock.json",
     "build": "npm run clean && npm install",
     "start": "node server.js",
-    "test": "jest",
+    "test": "npm run test-unit && npm run test-ci",
     "test-unit": "jest -- poc-unit.test.js",
     "test-integration": "jest poc-integration.test.js",
     "test-ci": "jest poc-integration.test.js --ci --reporters=default --reporters=jest-junit"
@@ -28,6 +28,7 @@
     "jsonpath": "^1.1.1",
     "nanoid": "^3.3.4",
     "nodemon": "^2.0.21",
+    "node-fetch": "^2.6.9",
     "xml2js": "^0.4.23"
   },
   "devDependencies": {
@@ -39,7 +40,6 @@
     "http": "0.0.1-security",
     "jest": "^29.5.0",
     "jest-junit": "^15.0.0",
-    "node-fetch": "^2.6.9",
     "supertest": "^6.3.3",
     "xml-js": "^1.6.11"
   }
