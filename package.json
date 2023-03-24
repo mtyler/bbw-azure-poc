@@ -27,7 +27,6 @@
     "express": "^4.18.2",
     "jsonpath": "^1.1.1",
     "nanoid": "^3.3.4",
-    "node-fetch": "^2.6.9",
     "nodemon": "^2.0.21",
     "xml2js": "^0.4.23"
   },
@@ -40,6 +39,7 @@
     "http": "0.0.1-security",
     "jest": "^29.5.0",
     "jest-junit": "^15.0.0",
+    "node-fetch": "^2.6.9",
     "supertest": "^6.3.3",
     "xml-js": "^1.6.11"
   }

@@ -29,9 +29,16 @@ describe('Get API tests using supertest', () => {
     expect(response.statusCode).toBe(200);
     expect(response.body.success).toBe('delete call succeed!');
   });
-});
 
-describe('Get healthcheck', () => {
+  it("sfdemo with tax info from Radial", async () => {
+    const response = await request(app).get('/sfdemo/dress');
+    expect(response.statusCode).toBe(200);
+    expect(response.body.productName).toBe("Floral Dress");
+    expect(response.body.price).toBe(129);
+  });
+// });
+
+// describe('Get healthcheck', () => {
   it("/healthz should return 200", async () => {
     const response = await request(app).get("/healthz");
     expect(response.statusCode).toBe(200);
