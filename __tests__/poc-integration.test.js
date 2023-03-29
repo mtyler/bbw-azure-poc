@@ -35,16 +35,22 @@ describe('BBW API Integration Test #1 with Jest', () => {
     expect(ItemId._attributes.type).toBe('VPN');
   }); 
   
-  // it('Tests BBW /destinattions endpoints', async() => {
-  //   // const baseurl_bbw = "https://bbwapim.azure-api.net/apparel"
-  //   const baseurl_bbw = "http://20.62.218.250:8080/sfdemo";
-  //   const response = await request(baseurl_bbw).get('/pants');
-  //   // console.log('******************************************************************');
-  //   // console.log('ests BBW /destinattions endpoints****************' + response['text']);
-  //   expect(response.body.hits[0].productName).toBe("Floral Dress");
-  //   expect(response.body.hits[0].price).toBe(129);
-  //   expect(response.body.limit).toBe(10);
-  //   // expect(response.body.productName).toBe("Floral Dress");
-  //   // expect(response.body.price).toBe(129);
-  // });
+  it('Tests POC API /pants endpoint', async() => {
+    // const baseurl_bbw = "https://bbwapim.azure-api.net/apparel"
+    const baseurl_bbw = "http://20.62.218.250:8080/sfdemo";
+    const response = await request(baseurl_bbw).get('/pants');
+    expect(response.body.productName).toBe("Classic Fit Jean");
+    expect(response.body.price).toBe(59);
+    expect(response.body.taxData[0][0].TaxClass[0]).toBe("76800");
+    expect(response.body.taxData[0][0].Taxes[0].Tax[0].Situs[0]).toBe("ADMINISTRATIVE_ORIGIN");
+  });
+
+  it('Tests POC API /dress endpoint', async() => {
+    const baseurl_bbw = "http://20.62.218.250:8080/sfdemo";
+    const response = await request(baseurl_bbw).get('/dress');
+    expect(response.body.productName).toBe("Floral Dress");
+    expect(response.body.price).toBe(129);
+    expect(response.body.taxData[0][0].TaxClass[0]).toBe("76800");
+    expect(response.body.taxData[0][0].Taxes[0].Tax[0].Situs[0]).toBe("ADMINISTRATIVE_ORIGIN");
+  });
 });
