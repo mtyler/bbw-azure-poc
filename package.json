@@ -16,10 +16,10 @@
     "clean": "rm -rf node_modules && rm -f package-lock.json",
     "build": "npm run clean && npm install",
     "start": "node server.js",
-    "test": "npm run test-unit && npm run test-ci",
-    "test-unit": "jest -- poc-unit.test.js",
+    "test": "npm run test-unit && npm run test-integration",
+    "test-unit": "jest poc-unit.test.js --reporters=default --reporters=jest-junit",
     "test-integration": "jest poc-integration.test.js",
-    "test-ci": "jest poc-integration.test.js --ci --reporters=default --reporters=jest-junit"
+    "test-ci": "jest poc-ci.test.js --ci --reporters=default --reporters=jest-junit"
   },
   "dependencies": {
     "body-parser": "^1.17.1",

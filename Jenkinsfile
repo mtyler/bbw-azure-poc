@@ -8,35 +8,32 @@ pipeline {
       TAG="${JOB_BASE_NAME}-${BUILD_NUMBER}"
   }
   stages {
-    stage('Branch Validation: Build & Unit Test') {
+    stage('Validate: Build & Unit Test') {
       steps {
         sh '''
             echo "Cleanup..."
             rm -rf ./node_modules
-            rm -f junit.xml eslint.xml package-lock.json
+            rm -f junit.xml package-lock.json
             echo "Setup..."
+            export JEST_JUNIT_OUTPUT_FILE='junit.xml'
             npm install
-            ## uncomment to include static code analysis
-            ## echo "Running Lint..."
-            ## npx eslint -c .eslintrc.yml -f checkstyle app.js > eslint.xml
+            echo "Running Static Code Analysis..."
+            echo "TODO: Add Static Code Analysis here"
             echo "Running Unit Tests..."
-            npm run test-unit
-            echo "Running Integration Tests..."
-            npm run test-ci
+            npm run test-unit 
         '''    
       junit 'junit.xml'
       }
     }
-    stage('Branch Validation: Docker Build') {
+    stage('CI: Docker Build') {
       steps {
         sh '''
             echo "Docker Build"
             docker build --progress=plain --no-cache -t $ACR/$SERVICE:$TAG $WORKSPACE/. --build-arg BUILD=$TAG
         '''    
-      junit 'junit.xml'
       }
     }
-    stage('Branch Validation: Push') {
+    stage('CI: Push') {
       options {
           azureKeyVault([[envVariable: 'BBWCR_KEY', name: 'bbwcr', secretType: 'Secret']])
       }
@@ -48,7 +45,7 @@ pipeline {
           '''
       }
     }
-    stage('Branch Validation: Deploy') {
+    stage('CI: Deploy') {
       steps {
         sh '''
           echo "Deploy Branch"
@@ -59,23 +56,26 @@ pipeline {
         '''
       }
     }
-    stage('Branch Validation: Smoke Test') {
+    stage('CI: Test') {
       steps {
-          script {
-            echo "Smoke Test Branch"
-            RESULT = sh (
-                  script: '''
-                  echo "give $SERVICE time to get ingress"
-                  sleep 25
-                  JOB_LOWER=$(echo $JOB_BASE_NAME | tr '[:upper:]' '[:lower:]')
-                  curl http://$(kubectl get svc --namespace $JOB_LOWER $SERVICE --template "{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"):8080''',
-                  returnStdout: true
-              ).trim()
-            echo "test result: ${RESULT}"
-          }
-        }
+        sh '''
+          echo "give $SERVICE time to get ingress"
+          sleep 25
+          JOB_LOWER=$(echo $JOB_BASE_NAME | tr '[:upper:]' '[:lower:]')
+          echo "get /healthz response..."
+          curl http://$(kubectl get svc --namespace $JOB_LOWER $SERVICE --template "{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"):8080/healthz
+          sleep 5
+          echo "run integration test..."
+          SFDEMO_URL=$(kubectl get svc --namespace $JOB_LOWER $SERVICE --template "{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"):8080/sfdemo npm run test-ci
+        '''  
+        junit 'junit.xml'
+      }
     }
-    stage('Trunk Validation: Deploy QA') {
+    // ***********************************
+    // BEGIN Continuous Deployment phase 
+    //       performed on Trunk|main|master 
+    // ***********************************
+    stage('CD: Deploy QA') {
       when { 
           branch 'main'
       }
@@ -83,27 +83,24 @@ pipeline {
         sh '''
           echo "Deploy QA"
           az aks get-credentials -g $RGROUP -n $AKS 
-          kubectl cluster-info
-          helm upgrade $SERVICE $SERVICE/ --install --reuse-values --create-namespace -n qa -f $WORKSPACE/poc/values.yaml --set image.tag=$TAG --set image.pullPolicy=Always
+          helm upgrade $SERVICE $SERVICE/ --install --reuse-values --create-namespace -n qa -f $WORKSPACE/poc/values-qa.yaml --set image.tag=$TAG --set image.pullPolicy=Always
         '''
       }
     }
-    stage('Trunk Validation: Smoke Test QA') {
+    stage('CD: Integration Test QA') {
       when { 
           branch 'main'
       }
       steps {
-        script {
-          echo "Smoke Test QA"
-          RESULT = sh (
-                script: 'curl http://$(kubectl get svc --namespace qa $SERVICE --template "{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"):8080',
-                returnStdout: true
-            ).trim()
-          echo "test result: ${RESULT}"
-        }
+        sh '''  
+          echo "Get QA Url..."
+          JOB_LOWER=$(echo $JOB_BASE_NAME | tr '[:upper:]' '[:lower:]')
+          SFDEMO_URL=$(kubectl get svc --namespace $JOB_LOWER $SERVICE --template "{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"):8080/sfdemo npm run test-ci
+        '''
+        junit 'junit.xml'
       }
     }
-    stage('Trunk Validation: Deploy Prod') {
+    stage('CD: Deploy Prod') {
       when { 
           branch 'main'
       }
@@ -112,11 +109,11 @@ pipeline {
           echo "Deploy Prod"
           az aks get-credentials -g $RGROUP -n $AKS 
           kubectl cluster-info
-          helm upgrade $SERVICE $SERVICE/ --install --reuse-values --create-namespace -n prod -f $WORKSPACE/poc/values.yaml --set image.tag=$TAG --set image.pullPolicy=Always
+          helm upgrade $SERVICE $SERVICE/ --install --reuse-values --create-namespace -n prod -f $WORKSPACE/poc/values-prod.yaml --set image.tag=$TAG --set image.pullPolicy=Always
         '''
       }
     }
-    stage('Trunk Validation: Smoke Test Prod') {
+    stage('CD: Smoke Test Prod') {
       when { 
           branch 'main'
       }

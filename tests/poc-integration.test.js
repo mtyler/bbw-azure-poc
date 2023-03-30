@@ -6,13 +6,16 @@ const fs = require('fs');
 const path = require('path');
 const convert = require('xml-js');
 
-const xmlFile = fs.readFileSync(path.resolve(__dirname, '../__mockData__/radial-tax-request-mock.xml'), 'utf8');
+const xmlFile = fs.readFileSync(path.resolve(__dirname, '../mockData/radial-tax-request-mock.xml'), 'utf8');
+
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
+
+const baseurl = process.env.SFDEMO_URL;
+console.log(`Running integration tests using base Url: ${baseurl}`);    
 
 describe('BBW API Integration Test #1 with Jest', () => {
-  afterAll(function(done) {
-    console.log('afterAll:')
-    server.close(done)
-  })
 
   it('tests MOCK Radial /destinations endpoints', async() => {
     const baseurl_poc = "https://bbw-poc-radial-api-mock001.azurewebsites.net/api/MattTestHttpTrigger01";
@@ -36,9 +39,7 @@ describe('BBW API Integration Test #1 with Jest', () => {
   }); 
   
   it('Tests POC API /pants endpoint', async() => {
-    // const baseurl_bbw = "https://bbwapim.azure-api.net/apparel"
-    const baseurl_bbw = "http://20.62.218.250:8080/sfdemo";
-    const response = await request(baseurl_bbw).get('/pants');
+    const response = await request(baseurl).get('/pants');
     expect(response.body.productName).toBe("Classic Fit Jean");
     expect(response.body.price).toBe(59);
     expect(response.body.taxData[0][0].TaxClass[0]).toBe("76800");
@@ -46,8 +47,7 @@ describe('BBW API Integration Test #1 with Jest', () => {
   });
 
   it('Tests POC API /dress endpoint', async() => {
-    const baseurl_bbw = "http://20.62.218.250:8080/sfdemo";
-    const response = await request(baseurl_bbw).get('/dress');
+    const response = await request(baseurl).get('/dress');
     expect(response.body.productName).toBe("Floral Dress");
     expect(response.body.price).toBe(129);
     expect(response.body.taxData[0][0].TaxClass[0]).toBe("76800");

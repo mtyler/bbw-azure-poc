@@ -36,24 +36,9 @@ describe('Get API tests using supertest', () => {
     expect(response.body.productName).toBe("Floral Dress");
     expect(response.body.price).toBe(129);
   });
-// });
 
-// describe('Get healthcheck', () => {
   it("/healthz should return 200", async () => {
     const response = await request(app).get("/healthz");
     expect(response.statusCode).toBe(200);
   });
 })
-
-// ////////////   this is a playwright test     ////////////
-// //   // @ts-check
-// // test.describe("API Test #1 with Playwright", () => {
-// //     const baseurl = "https://bbwapim.azure-api.net/apparel";
-// //     test("GET API Request with - Valid 200 Response ", async ({ request }) => {
-// //         const response = await request.get(`${baseurl}/dress`);
-// //         expect(response.status()).toBe(200);
-// //         const responseBody = JSON.parse(await response.text());
-// //         expect(responseBody.hits[0].productName).toBe("Floral Dress");
-// //         expect(responseBody.hits[0].price).toBe(129);
-// //     });
-// // });

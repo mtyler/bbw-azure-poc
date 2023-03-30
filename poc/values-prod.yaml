@@ -1,0 +1,60 @@
+# Production values for poc
+# This is a YAML-formatted file
+# Declare variables to be passed into your templates.
+# DO NOT STORE SENSITIVE INFORMATION IN THIS FILE
+
+replicaCount: 1
+
+image:
+  repository: bbwcr.azurecr.io/poc
+
+imagePullSecrets: []
+nameOverride: "poc"
+fullnameOverride: "poc"
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+service:
+  type: LoadBalancer
+  port: 8080
+
+container:
+  port: 3000
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+resources: {}
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
