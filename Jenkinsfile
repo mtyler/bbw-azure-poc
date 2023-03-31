@@ -63,7 +63,7 @@ pipeline {
           sleep 25
           JOB_LOWER=$(echo $JOB_BASE_NAME | tr '[:upper:]' '[:lower:]')
           echo "get /healthz response..."
-          curl http://$(kubectl get svc --namespace $JOB_LOWER $SERVICE --template "{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"):8080/healthz
+          curl -s http://$(kubectl get svc --namespace $JOB_LOWER $SERVICE --template "{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"):8080/healthz
           sleep 5
           echo "run integration test..."
           SFDEMO_URL=$(kubectl get svc --namespace $JOB_LOWER $SERVICE --template "{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"):8080/sfdemo npm run test-ci
@@ -108,7 +108,6 @@ pipeline {
         sh '''
           echo "Deploy Prod"
           az aks get-credentials -g $RGROUP -n $AKS 
-          kubectl cluster-info
           helm upgrade $SERVICE $SERVICE/ --install --reuse-values --create-namespace -n prod -f $WORKSPACE/poc/values-prod.yaml --set image.tag=$TAG --set image.pullPolicy=Always
         '''
       }
@@ -121,7 +120,7 @@ pipeline {
         script {
           echo "Smoke Test Prod"
           RESULT = sh (
-                script: 'curl http://$(kubectl get svc --namespace prod $SERVICE --template "{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"):8080',
+                script: 'curl -s http://$(kubectl get svc --namespace prod $SERVICE --template "{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"):8080',
                 returnStdout: true
             ).trim()
           echo "test result: ${RESULT}"
