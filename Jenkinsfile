@@ -8,7 +8,12 @@ pipeline {
       TAG="${JOB_BASE_NAME}-${BUILD_NUMBER}"
   }
   stages {
+    
     stage('Validate: Build & Unit Test') {
+      /********************************************************************
+       * Here we clean up from the last run and do initial validation 
+       * Build, Static analysis, Security scans, Unit Test
+       ********************************************************************/
       steps {
         sh '''
             echo "Cleanup..."
@@ -35,17 +40,25 @@ pipeline {
     }
     stage('CI: Push') {
       options {
-          azureKeyVault([[envVariable: 'BBWCR_KEY', name: 'bbwcr', secretType: 'Secret']])
+        // Note: Sensitive information like keys should never be commited to source control
+        // get key from vault   
+        azureKeyVault([[envVariable: 'BBWCR_KEY', name: 'bbwcr', secretType: 'Secret']])
       }
       steps {
-         sh '''
-            echo "Push"
-            docker login -u bbwcr -p $BBWCR_KEY $ACR
-            docker push $ACR/$SERVICE:$TAG
-          '''
+        // Push container to Azure Container Registry 
+        sh '''
+          echo "Push"
+          docker login -u bbwcr -p $BBWCR_KEY $ACR
+          docker push $ACR/$SERVICE:$TAG
+        '''
       }
     }
     stage('CI: Deploy') {
+      /********************************************************************
+       * Helm install | upgrade to Branch
+       *  Note: branches create short-lived environments for testing 
+       *        IP is logged in Jenkins  
+       ********************************************************************/
       steps {
         sh '''
           echo "Deploy Branch"
@@ -57,6 +70,10 @@ pipeline {
       }
     }
     stage('CI: Test') {
+      /********************************************************************
+       * Wait for environment based on branch-name to start
+       * Target Branch Url and exec 'npm run test-ci' 
+       ********************************************************************/
       steps {
         sh '''
           echo "give $SERVICE time to get ingress"
@@ -76,6 +93,9 @@ pipeline {
     //       performed on Trunk|main|master 
     // ***********************************
     stage('CD: Deploy QA') {
+      /********************************************************************
+       * Helm install | upgrade to Production 
+       ********************************************************************/
       when { 
           branch 'main'
       }
@@ -88,6 +108,9 @@ pipeline {
       }
     }
     stage('CD: Integration Test QA') {
+      /********************************************************************
+       * Target QA Url and exec 'npm run test-ci' 
+       ********************************************************************/
       when { 
           branch 'main'
       }
@@ -101,6 +124,9 @@ pipeline {
       }
     }
     stage('CD: Deploy Prod') {
+      /********************************************************************
+       * Helm install | upgrade to Production 
+       ********************************************************************/
       when { 
           branch 'main'
       }
@@ -113,6 +139,9 @@ pipeline {
       }
     }
     stage('CD: Smoke Test Prod') {
+      /********************************************************************
+       * Check Production Url for a 200
+       ********************************************************************/
       when { 
           branch 'main'
       }

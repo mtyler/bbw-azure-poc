@@ -1,12 +1,11 @@
 const request = require('supertest');
 const server = require('../server');
-const app = require('../app');
 
 const fs = require('fs');
 const path = require('path');
 const convert = require('xml-js');
 
-const xmlFile = fs.readFileSync(path.resolve(__dirname, '../mockData/radial-tax-request-mock.xml'), 'utf8');
+const xmlFile = fs.readFileSync(path.resolve(__dirname, './mockData/radial-tax-request-mock.xml'), 'utf8');
 
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
@@ -16,6 +15,10 @@ const baseurl = process.env.SFDEMO_URL;
 console.log(`Running integration tests using base Url: ${baseurl}`);    
 
 describe('BBW API Integration Test #1 with Jest', () => {
+  afterAll(function(done) {
+    console.log('afterAll:')
+    server.close(done)
+  })
 
   it('tests MOCK Radial /destinations endpoints', async() => {
     const baseurl_poc = "https://bbw-poc-radial-api-mock001.azurewebsites.net/api/MattTestHttpTrigger01";

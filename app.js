@@ -5,8 +5,8 @@
 require('dotenv').config()
 const express = require('express')
 const bodyParser = require('body-parser')
-
-const createServer = require('./server') // new
+const xml2js = require('xml2js')
+const fetch = require('node-fetch')
 
 // declare a new express app
 const app = express()
@@ -22,9 +22,6 @@ app.use(function (req, res, next) {
 /** JF: Logging utility function for inspecting requests */
 const _LOG_REQUEST_INFO = false
 const logRequestInfo = function (req, res) {
-  // const stackTrace = new Error().stack
-  // console.debug(stackTrace)
-
   if (_LOG_REQUEST_INFO && req) {
     const port = req.port ? `:${req.port}` : ''
     const requestUrl = `${req.protocol}://${req.hostname}${port}${req.path}`
@@ -33,8 +30,6 @@ const logRequestInfo = function (req, res) {
     console.debug('Request body: ' + JSON.stringify(req.body))
     console.debug('Request params: ' + JSON.stringify(req.params))
     console.debug('Request qSParams: ' + JSON.stringify(req.query))
-    // console.debug(req.originalUrl)
-    // console.debug(req.subdomains)
   }
 }
 
@@ -80,13 +75,14 @@ async function getGuestUserAuthToken () {
   }
 }
 
-// Get a JWT to use with Shopper API clients
+/********************************************************************
+ * Fetch search results
+ ********************************************************************/
 async function shop (req, res) {
   logRequestInfo(req, res)
   let tokenData
   try {
     tokenData = await getGuestUserAuthToken()
-    // console.log(`${JSON.stringify(tokenData)}`)
   } catch (e) {
     console.error(e)
     console.error(await e.response.text())
@@ -119,11 +115,8 @@ async function shop (req, res) {
 }
 
 /********************************************************************
- * Query a Radial API that returns XML and parse he response to JSON.
+ * Query a Radial API that returns XML and parse the response to JSON.
  ********************************************************************/
-const xml2js = require('xml2js')
-const fetch = require('node-fetch')
-
 async function getTaxes() {
   const parser = new xml2js.Parser()
   parser.on('error', function (err) {
@@ -170,11 +163,9 @@ app.get('/sfdemo/*', async function (req, res) {
   // apparel product in the Shopper API search results and mash them up
   // to create our response object.
   const apparelSearchResults = await shop(req, res)
-  //console.log('Apparel search results: ', apparelSearchResults)
   const product = apparelSearchResults.hits[0]
 
   const extraCosts = await getTaxes()
-  //console.log('Extra costs: ', JSON.stringify(extraCosts))
   const taxData = jp.query(extraCosts, '$..TaxData')
 
   const data = { // Not beautiful, but makes the point.
@@ -182,7 +173,6 @@ app.get('/sfdemo/*', async function (req, res) {
     price: product.price,
     taxData: taxData
   }
-  //console.log('Response object: \n', JSON.stringify(data, null, 2))
 
   res.json(data)
 })
@@ -190,16 +180,6 @@ app.get('/sfdemo/*', async function (req, res) {
 /****************************
 * Example post method *
 ****************************/
-// const fs = require('fs');
-// const path = require('path');
-// // const convert = require('xml-js');
-
-// const xmlFile = fs.readFileSync(path.resolve(__dirname, './__mockData__/radial-tax-response-mock.xml'), 'utf8');
-
-// app.post('/', function(req, res) {
-//   // Add your code here
-//   res.json({success: 'post call succeed!', url: req.url, body: xmlFile})
-// });
 
 app.post('/item', function (req, res) {
   // Add your code here
@@ -239,6 +219,7 @@ app.delete('/item/*', function (req, res) {
   res.json({ success: 'delete call succeed!', url: req.url })
 })
 
+
 /****************************
 * Healthcheck method *
 ****************************/
@@ -246,10 +227,5 @@ app.delete('/item/*', function (req, res) {
 app.get('/healthz', (req, res) => {
   res.status(200).send(process.env.BUILD)
 })
-
-// process.on('SIGTERM', () => {
-//   server.close(() => {
-//   })
-// })
 
 module.exports = app
