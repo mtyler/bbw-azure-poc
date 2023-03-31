@@ -92,8 +92,8 @@ async function shop (req, res) {
   config.headers.authorization = `Bearer ${tokenData.access_token}`
 
   // Search
-  console.log(`shop: ${JSON.stringify(req.params)}`)
-  console.log(`shop: ${JSON.stringify(req.params[0])}`)
+  //console.log(`shop: ${JSON.stringify(req.params)}`)
+  //console.log(`shop: ${JSON.stringify(req.params[0])}`)
   const queryTerm = req.params[0]
   const searchClient = new Search.ShopperSearch(config)
   const limit = 10
