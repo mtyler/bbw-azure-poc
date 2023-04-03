@@ -147,7 +147,7 @@ async function getTaxes() {
 app.get('/', function (req, res) {
   // JF: 20230210 - trying to return a 200 for AKS probe health checks
   const build = process.env.BUILD
-  res.json({ success: 'Get call succeed!', url: req.url, body: req.body })
+  res.json({ success: 'get call succeed!', url: req.url, body: req.body })
 })
 
 app.get('/sfdemo', function (req, res) {
