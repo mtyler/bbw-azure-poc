@@ -1,5 +1,5 @@
 # bbw-azure-poc
-This is an mvp demonstrating  
+This repo demonstrates  
 
 1. An Express.js app that searches the Salesforce demo Apparel API and returns a JSON payload containing the results
 
