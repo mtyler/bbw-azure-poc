@@ -13,7 +13,7 @@
   "main": "app.js",
   "license": "Apache-2.0",
   "scripts": {
-    "clean": "rm -rf node_modules && rm -f package-lock.json",
+    "clean": "rm -rf node_modules && rm -f package-lock.json junit.xml",
     "build": "npm run clean && npm install",
     "start": "node server.js",
     "test": "npm run test-unit && npm run test-integration",
@@ -32,11 +32,6 @@
     "xml2js": "^0.4.23"
   },
   "devDependencies": {
-    "eslint": "^8.36.0",
-    "eslint-config-standard": "^17.0.0",
-    "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-n": "^15.6.1",
-    "eslint-plugin-promise": "^6.1.1",
     "http": "0.0.1-security",
     "jest": "^29.5.0",
     "jest-junit": "^15.0.0",
